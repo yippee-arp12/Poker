@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CryptoLens — Live Crypto Analytics</title>
+<meta name="description" content="Live crypto market analytics dashboard. Prices, dominance, gainers, losers, volume and more."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="noise"></div>
+
+<!-- HEADER -->
+<header id="header">
+  <div class="container header-inner">
+    <div class="brand">
+      <div class="brand-icon">₿</div>
+      <div class="brand-text">
+        <span class="brand-name">CryptoLens</span>
+        <span class="brand-sub">Live Market Analytics</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="refresh-info">
+        <span class="refresh-dot" id="refreshDot"></span>
+        <span id="lastUpdate">Fetching data...</span>
+      </div>
+      <div class="global-stats" id="globalStats"></div>
+    </div>
+    <div class="header-right">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search coin..."/>
+      <button class="refresh-btn" id="refreshBtn" title="Refresh data">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="container">
+
+  <!-- STAT CARDS -->
+  <section class="stats-row" id="statsRow">
+    <div class="stat-card" id="sc-mcap">
+      <div class="sc-label">Total Market Cap</div>
+      <div class="sc-value" id="totalMcap">—</div>
+      <div class="sc-change" id="totalMcapChange">—</div>
+    </div>
+    <div class="stat-card" id="sc-vol">
+      <div class="sc-label">24h Volume</div>
+      <div class="sc-value" id="totalVol">—</div>
+      <div class="sc-change" id="totalVolChange">—</div>
+    </div>
+    <div class="stat-card" id="sc-btc">
+      <div class="sc-label">BTC Dominance</div>
+      <div class="sc-value" id="btcDom">—</div>
+      <div class="sc-bar-wrap"><div class="sc-bar" id="btcBar"></div></div>
+    </div>
+    <div class="stat-card" id="sc-eth">
+      <div class="sc-label">ETH Dominance</div>
+      <div class="sc-value" id="ethDom">—</div>
+      <div class="sc-bar-wrap"><div class="sc-bar eth" id="ethBar"></div></div>
+    </div>
+    <div class="stat-card" id="sc-fg">
+      <div class="sc-label">Fear &amp; Greed</div>
+      <div class="sc-value" id="fgValue">—</div>
+      <div class="sc-change" id="fgLabel">—</div>
+    </div>
+  </section>
+
+  <!-- CHARTS ROW -->
+  <section class="charts-row">
+    <div class="chart-card wide">
+      <div class="chart-header">
+        <span class="chart-title">Market Cap Distribution</span>
+        <span class="chart-sub">Top 10 coins</span>
+      </div>
+      <div class="chart-wrap"><canvas id="dominanceChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Top Gainers 24h</span>
+        <span class="chart-sub">% change</span>
+      </div>
+      <div class="chart-wrap"><canvas id="gainersChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Top Losers 24h</span>
+        <span class="chart-sub">% change</span>
+      </div>
+      <div class="chart-wrap"><canvas id="losersChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- TABLE -->
+  <section class="table-section">
+    <div class="table-header">
+      <span class="chart-title">Live Market Data</span>
+      <div class="table-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="gainers">Gainers</button>
+        <button class="filter-btn" data-filter="losers">Losers</button>
+        <button class="filter-btn" data-filter="volume">High Volume</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="coinsTable">
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="rank"># <span class="sort-arrow">↕</span></th>
+            <th>Coin</th>
+            <th class="sortable" data-sort="price">Price <span class="sort-arrow">↕</span></th>
+            <th class="sortable" data-sort="change">24h % <span class="sort-arrow">↕</span></th>
+            <th class="sortable" data-sort="mcap">Market Cap <span class="sort-arrow">↕</span></th>
+            <th class="sortable" data-sort="volume">Volume 24h <span class="sort-arrow">↕</span></th>
+            <th>7d Trend</th>
+            <th>ATH</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="8" class="loading-row"><div class="spinner"></div> Loading market data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <span>CryptoLens — Data sourced from <a href="https://coingecko.com" target="_blank">CoinGecko API</a></span>
+    <span id="footerUpdate"></span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<script src="app.js"></script>
+</body>
+</html>
