@@ -1,0 +1,1 @@
+{"version":2,"builds":[{"src":"crypto-analytics/index.html","use":"@vercel/static"}],"routes":[{"src":"/(.*)","dest":"/crypto-analytics/$1"}]}
